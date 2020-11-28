@@ -2,5 +2,8 @@
     <string name="app_name">Generic Carsharing</string>
 
     <string name="mapbox_access_token">pk.eyJ1IjoiYmVsa2FjYXIiLCJhIjoiY2tkajg3anAyMGM3NzJ2bGhkMXJjZ213bCJ9.XIzfKyb_S9Mhu1-nU96fIQ</string>
+
     <string name="toast_cars_loaded">Загружено машин: %d</string>
+    <string name="toast_location_permission_not_granted">Приложение не сможет отобразить ваше местоположение без доступа к геолокации</string>
+    <string name="toast_location_permission_explanation">Для того, чтобы видеть свое местоположение и строить маршрут к авто, приложению необходим доступ к геолокации</string>
 </resources>
