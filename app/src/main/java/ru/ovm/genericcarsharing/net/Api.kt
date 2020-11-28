@@ -8,6 +8,6 @@ interface Api {
     suspend fun getCars(): List<Car>
 
     companion object {
-        val URL: String = "https://raw.githubusercontent.com"
+        const val URL: String = "https://raw.githubusercontent.com"
     }
 }

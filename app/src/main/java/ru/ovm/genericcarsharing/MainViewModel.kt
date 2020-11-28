@@ -12,9 +12,9 @@ import ru.ovm.genericcarsharing.net.Api
 
 class MainViewModel(private val api: Api) : ViewModel() {
 
-    val cars: LiveData<List<Car>?>
+    val cars: LiveData<Map<Long, Car>?>
         get() = _cars
-    private val _cars = MutableLiveData<List<Car>?>()
+    private val _cars = MutableLiveData<Map<Long, Car>?>()
 
     init {
         loadCars()
@@ -26,6 +26,9 @@ class MainViewModel(private val api: Api) : ViewModel() {
 
             withContext(Dispatchers.Main) {
                 _cars.value = cars
+                    .filter { it.id != null && it.latitude != null && it.longitude != null }
+                    .map { car -> car.id!! to car }
+                    .toMap()
             }
         } catch (e: Exception) {
             // TODO: 28.11.2020 proceed errors in next versions

@@ -7,6 +7,9 @@ import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.android.core.permissions.PermissionsListener
@@ -34,6 +37,7 @@ import com.mapbox.navigation.core.replay.route.ReplayProgressObserver
 import com.mapbox.navigation.core.trip.session.LocationObserver
 import com.mapbox.navigation.ui.route.NavigationMapRoute
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.bottom_sheet.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.ovm.genericcarsharing.domain.Color
 import ru.ovm.genericcarsharing.utils.AllColorsCarBitmapsManager
@@ -62,6 +66,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     private var activeRoute: DirectionsRoute? = null
     private val mapboxReplayer = MapboxReplayer()
 
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,6 +76,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         prepareIcons()
 
         setContentView(R.layout.activity_main)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
 
         map_view.onCreate(savedInstanceState)
         map_view.getMapAsync(this::onMapReady)
@@ -96,12 +103,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     }
 
     @SuppressLint("MissingPermission")
-    private fun onMapReady(map: MapboxMap) {
-        this.map = map
-        map.setStyle(
-            Style.Builder().fromUri("mapbox://styles/belkacar/ckdj89h8c0rk61jlgb850lece")
-        ) {
-            enableLocationComponent(it)
+    private fun onMapReady(mapboxMap: MapboxMap) {
+        map = mapboxMap
+        val styleUri = Style.Builder().fromUri("mapbox://styles/belkacar/ckdj89h8c0rk61jlgb850lece")
+        mapboxMap.setStyle(styleUri) { style ->
+            enableLocationComponent(style)
 
             val navigationOptions =
                 MapboxNavigation.defaultNavigationOptionsBuilder(
@@ -116,16 +122,29 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             mapboxReplayer.pushRealLocation(this, 0.0)
             mapboxReplayer.play()
 
-            navigationMapRoute = NavigationMapRoute.Builder(map_view, map, this)
+            navigationMapRoute = NavigationMapRoute.Builder(map_view, mapboxMap, this)
                 .withVanishRouteLineEnabled(true)
                 .withMapboxNavigation(navigation)
                 .build()
 
             navigation.navigationOptions.locationEngine.getLastLocation(locationEngineCallback)
 
-            map.setOnMarkerClickListener { marker ->
-                Toast.makeText(applicationContext, marker.snippet, Toast.LENGTH_SHORT).show()
-                val lastKnownLocation = map.locationComponent.lastKnownLocation
+            mapboxMap.setOnMarkerClickListener { marker ->
+                val id = marker.title.toLong()
+                vm.cars.value?.let { map ->
+                    map[id]?.let { car ->
+                        car_fuel.text = getString(R.string.car_fuel_text, car.fuel_percentage)
+                        car_name.text = car.name
+                        car_number.text = car.plate_number
+                        Glide.with(this).load("https://loremflickr.com/300/200/car")
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(car_image);
+                    }
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+
+                val lastKnownLocation = mapboxMap.locationComponent.lastKnownLocation
                 lastKnownLocation?.let { location ->
                     findRoute(
                         Point.fromLngLat(location.longitude, location.latitude),
@@ -136,15 +155,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 true
             }
 
-            map.addOnMapClickListener {
+            mapboxMap.addOnMapClickListener {
                 hideRoute()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
                 true
             }
-
-            if (activeRoute != null) {
-                val routes: List<DirectionsRoute> = listOf(activeRoute!!)
-                navigationMapRoute!!.addRoutes(routes)
+            activeRoute?.let {
+                val routes: List<DirectionsRoute> = listOf(it)
+                navigationMapRoute?.addRoutes(routes)
                 navigation.setRoutes(routes)
             }
         }
@@ -160,39 +179,29 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 val r = Random()
                 val carsCoordinates = ArrayList<Point>()
 
-                cars.forEach { car ->
-                    if (car.latitude == null && car.longitude == null) {
-                        // не ну это бан
+                cars.values.forEach { car ->
+                    var marker: MarkerOptions =
+                        MarkerOptions().position(LatLng(car.latitude!!, car.longitude!!))
+
+                    // а вдруг бекенд обновится и появятся новые цвета, а мы уже готовы
+                    val color = car.color ?: if (r.nextBoolean()) Color.BLUE else Color.BLACK
+
+                    marker = if (App.ROTATE_CARS && car.angle != null) {
+                        val carBitmap = carBitmaps.getCarBitmap(color, car.angle)
+                        marker.icon(iconFactory.fromBitmap(carBitmap!!))
                     } else {
-                        var marker: MarkerOptions =
-                            MarkerOptions().position(LatLng(car.latitude!!, car.longitude!!))
-
-                        // а вдруг бекенд обновится и появятся новые цвета, а мы уже готовы
-                        val color = car.color ?: if (r.nextBoolean()) Color.BLUE else Color.BLACK
-
-                        marker = if (App.ROTATE_CARS && car.angle != null) {
-                            val carBitmap = carBitmaps.getCarBitmap(color, car.angle)
-                            marker.icon(iconFactory.fromBitmap(carBitmap!!))
-                        } else {
-                            val icon = when (color) {
-                                Color.BLACK -> blackCarIcon
-                                Color.BLUE -> blueCarIcon
-                            }
-                            marker.icon(icon)
+                        val icon = when (color) {
+                            Color.BLACK -> blackCarIcon
+                            Color.BLUE -> blueCarIcon
                         }
-
-                        if (car.plate_number != null) {
-                            marker = marker.setTitle(car.plate_number)
-                        }
-
-                        if (car.name != null) {
-                            marker = marker.setSnippet(car.name)
-                        }
-
-                        map.addMarker(marker)
-
-                        carsCoordinates.add(Point.fromLngLat(car.longitude, car.latitude))
+                        marker.icon(icon)
                     }
+
+                    marker = marker.setTitle(car.id.toString())
+
+                    mapboxMap.addMarker(marker)
+
+                    carsCoordinates.add(Point.fromLngLat(car.longitude, car.latitude))
                 }
 
                 // потратил некоторое время на попытки кластеризации, но чот оно начало падать с A/libc: Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE), да и не надо оно по тз
@@ -260,11 +269,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
-            // может упасть, если стиль будет долго грузится, а юзер прокликает разрешение на пермишены быстрее, но да ладно
-            enableLocationComponent(map.style!!)
+            map.getStyle {
+                enableLocationComponent(it)
+            }
         } else {
-            Toast.makeText(this, R.string.toast_location_permission_not_granted, Toast.LENGTH_LONG)
-                .show()
+            Toast.makeText(
+                this,
+                R.string.toast_location_permission_not_granted,
+                Toast.LENGTH_LONG
+            ).show()
             finish()
         }
     }
@@ -293,16 +306,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         super.onSaveInstanceState(outState)
         map_view.onSaveInstanceState(outState)
 
-        // This is not the most efficient way to preserve the route on a device rotation.
-        // This is here to demonstrate that this event needs to be handled in order to
-        // redraw the route line after a rotation.
-        if (activeRoute != null) {
-            outState.putString(PRIMARY_ROUTE_BUNDLE_KEY, activeRoute!!.toJson())
-        }
+        // в примере говорится, что этот способ не оч, но у нас тут не хайлоад система, так что сойдет
+        // восстанавливаем маршрут к машине, ес чо
+        activeRoute?.let { outState.putString(PRIMARY_ROUTE_BUNDLE_KEY, it.toJson()) }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
+        // сейвим построенный маршрут, чтобы показать его после пересоздания активити
         activeRoute = getRouteFromBundle(savedInstanceState)
     }
 
@@ -316,9 +327,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         map_view.onDestroy()
     }
 
-
     private fun hideRoute() {
-        navigationMapRoute!!.updateRouteVisibilityTo(false)
+        navigationMapRoute?.updateRouteVisibilityTo(false)
     }
 
     private fun findRoute(origin: Point?, destination: Point?) {
@@ -342,43 +352,32 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         override fun onRoutesReady(routes: List<DirectionsRoute>) {
             if (routes.isNotEmpty()) {
                 activeRoute = routes[0]
-                navigationMapRoute!!.addRoutes(routes)
+                navigationMapRoute?.addRoutes(routes)
             }
         }
 
-        override fun onRoutesRequestFailure(
-            throwable: Throwable,
-            routeOptions: RouteOptions
-        ) {
-
-        }
-
-        override fun onRoutesRequestCanceled(routeOptions: RouteOptions) {
-
-        }
+        override fun onRoutesRequestFailure(throwable: Throwable, routeOptions: RouteOptions) = Unit
+        override fun onRoutesRequestCanceled(routeOptions: RouteOptions) = Unit
     }
 
     private val locationEngineCallback = MyLocationEngineCallback(this)
 
     private inner class MyLocationEngineCallback(activity: MainActivity?) :
         LocationEngineCallback<LocationEngineResult> {
+
         private val activityRef: WeakReference<MainActivity> = WeakReference(activity)
+
         override fun onSuccess(result: LocationEngineResult) {
             activityRef.get()?.updateLocation(result.locations)
         }
 
-        override fun onFailure(exception: Exception) {
-
-        }
+        override fun onFailure(exception: Exception) = Unit
     }
 
-    fun updateLocation(location: Location) {
-        updateLocation(listOf(location))
-    }
+    fun updateLocation(location: Location) = updateLocation(listOf(location))
 
-    fun updateLocation(locations: List<Location>) {
+    fun updateLocation(locations: List<Location>) =
         map.locationComponent.forceLocationUpdate(locations, false)
-    }
 
     private val locationObserver: LocationObserver = object : LocationObserver {
         override fun onEnhancedLocationChanged(
@@ -392,9 +391,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             }
         }
 
-        override fun onRawLocationChanged(rawLocation: Location) {
-        }
-
+        override fun onRawLocationChanged(rawLocation: Location) = Unit
     }
 
     private val replayProgressObserver = ReplayProgressObserver(mapboxReplayer)
