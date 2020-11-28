@@ -2,11 +2,15 @@ package ru.ovm.genericcarsharing
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
+
+    val vm: MainViewModel by viewModel()
 
     @SuppressLint("WrongConstant")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +23,12 @@ class MainActivity : AppCompatActivity() {
         map_view.onCreate(savedInstanceState)
         map_view.getMapAsync { mapboxMap ->
             mapboxMap.setStyle("mapbox://styles/belkacar/ckdj89h8c0rk61jlgb850lece")
+        }
+
+        vm.cars.observe(this) {
+            it?.let {
+                Toast.makeText(this, getString(R.string.toast_cars_loaded, it.size), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
