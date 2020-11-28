@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Generic Carsharing</string>
+
+    <string name="mapbox_access_token">pk.eyJ1IjoiYmVsa2FjYXIiLCJhIjoiY2tkajg3anAyMGM3NzJ2bGhkMXJjZ213bCJ9.XIzfKyb_S9Mhu1-nU96fIQ</string>
 </resources>
