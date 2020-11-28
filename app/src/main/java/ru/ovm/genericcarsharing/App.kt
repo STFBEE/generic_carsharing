@@ -52,4 +52,9 @@ class App : Application() {
             modules(appModule)
         }
     }
+
+    companion object {
+        // Если включить, то сильно лагает и приложение начинает есть до 0.7гб ram, но красиво смотрится
+        const val ROTATE_CARS = false
+    }
 }

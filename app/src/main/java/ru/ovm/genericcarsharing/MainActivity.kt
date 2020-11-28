@@ -22,6 +22,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.ovm.genericcarsharing.domain.Color
+import ru.ovm.genericcarsharing.utils.AllColorsCarBitmapsManager
 import java.util.*
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
@@ -33,6 +34,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     private lateinit var blueCarIcon: Icon
     private lateinit var blackCarIcon: Icon
+
+    private lateinit var carBitmaps: AllColorsCarBitmapsManager
+
+    private lateinit var iconFactory: IconFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +51,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         map_view.onCreate(savedInstanceState)
         map_view.getMapAsync(this::onMapReady)
 
-
         vm.cars.observe(this) {
             it?.let {
                 Toast.makeText(this, getString(R.string.toast_cars_loaded, it.size), Toast.LENGTH_SHORT).show()
@@ -59,20 +63,19 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                     } else {
                         var marker: MarkerOptions = MarkerOptions().position(LatLng(car.latitude!!, car.longitude!!))
 
-                        val icon = when (car.color) {
-                            Color.BLACK -> blackCarIcon
-                            Color.BLUE -> blueCarIcon
-                            // а вдруг бекенд обновится и появятся новые цвета, а мы уже готовы
-                            else -> if (r.nextBoolean()) blackCarIcon else blueCarIcon
+                        // а вдруг бекенд обновится и появятся новые цвета, а мы уже готовы
+                        val color = car.color ?: if (r.nextBoolean()) Color.BLUE else Color.BLACK
+                        marker = if (App.ROTATE_CARS && car.angle != null) {
+                            val carBitmap = carBitmaps.getCarBitmap(color, car.angle)
+                            marker.icon(iconFactory.fromBitmap(carBitmap!!))
+                        } else {
+                            val icon = when (color) {
+                                Color.BLACK -> blackCarIcon
+                                Color.BLUE -> blueCarIcon
+                            }
+                            marker.icon(icon)
                         }
 
-                        marker = marker.icon(icon)
-
-                        if (car.angle != null) {
-                            // а крутить то нельзя :(
-                            // придется крутить битмапы чтоль
-                            // marker = marker.
-                        }
 
                         if (car.plate_number != null) {
                             marker = marker.setTitle(car.plate_number)
@@ -97,10 +100,16 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         // implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0'
         //        val symbolManager = SymbolManager(map_view, map, map.style!!)
         //        symbolManager.create(SymbolOptions().withLatLng(LatLng()))
+        iconFactory = IconFactory.getInstance(this)
+        blueCarIcon = iconFactory.fromResource(R.drawable.car_silhouette_blue)
+        blackCarIcon = iconFactory.fromResource(R.drawable.car_silhouette_black)
 
-        val instance = IconFactory.getInstance(this)
-        blueCarIcon = instance.fromResource(R.drawable.car_silhouette_blue)
-        blackCarIcon = instance.fromResource(R.drawable.car_silhouette_black)
+        if (App.ROTATE_CARS) {
+            carBitmaps = AllColorsCarBitmapsManager(resources, mapOf(
+                    Color.BLUE to R.drawable.car_silhouette_blue,
+                    Color.BLACK to R.drawable.car_silhouette_black
+            ))
+        }
     }
 
     override fun onStart() {
