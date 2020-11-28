@@ -7,7 +7,6 @@ import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineResult
@@ -170,9 +169,16 @@ class MainActivity : MapBoxActivity() {
         car_fuel.text = getString(R.string.car_fuel_text, car.fuel_percentage)
         car_name.text = car.name
         car_number.text = car.plate_number
-        Glide.with(this).load("https://loremflickr.com/300/200/car")
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
+
+        val photo = when (car.name) {
+            "Mercedes-Benz CLA 2019" -> "https://belkacar.ru/content/uploads/2020/10/cla-large2x11.jpg"
+            "Kia RIO X-Line" -> "https://belkacar.ru/content/uploads/2020/10/rioxline-large2x11.jpg"
+            "Volkswagen Polo" -> "https://belkacar.ru/content/uploads/2020/10/polo-large2x11.jpg"
+            else -> "https://belkacar.ru/content/uploads/2020/10/rioxline-large2x11.jpg"
+        }
+
+        Glide.with(this)
+            .load(photo)
             .into(car_image)
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED

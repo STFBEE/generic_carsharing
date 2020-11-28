@@ -10,4 +10,7 @@
 
     <color name="belka_blue">#0c4861</color>
     <color name="belka_black">#212112</color>
+
+    <color name="text_day">#171717</color>
+    <color name="text_night">#FBFBFB</color>
 </resources>
