@@ -54,7 +54,7 @@ dependencies {
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
 
     // maps
-    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.0"
     implementation "com.mapbox.navigation:ui:1.2.0"
 
     // network
