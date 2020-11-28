@@ -22,7 +22,7 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
             android:maxLines="2"
-            android:textColor="@color/belka_black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="36sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
             android:background="@drawable/plate_drawable"
             android:paddingHorizontal="6dp"
             android:paddingVertical="2dp"
-            android:textColor="@color/belka_black"
+            android:textColor="@color/text_day"
             android:textSize="18sp"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,14 +55,14 @@
             app:layout_constraintBottom_toBottomOf="@+id/car_fuel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/car_fuel"
-            app:tint="@color/belka_black" />
+            app:tint="?android:attr/textColorPrimary" />
 
         <TextView
             android:id="@+id/car_fuel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@color/belka_black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@id/fuel_icon"
             app:layout_constraintTop_toBottomOf="@+id/car_name"
@@ -73,14 +73,12 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
-            android:scaleType="fitStart"
+            android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="3:2"
+            app:layout_constraintDimensionRatio="8:5"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/car_number"
-            app:layout_constraintVertical_bias="0.0"
             tools:src="@tools:sample/backgrounds/scenic" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
