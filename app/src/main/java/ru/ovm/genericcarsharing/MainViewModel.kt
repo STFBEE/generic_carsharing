@@ -20,7 +20,7 @@ class MainViewModel(private val api: Api) : ViewModel() {
         loadCars()
     }
 
-    fun loadCars() = viewModelScope.launch {
+    private fun loadCars() = viewModelScope.launch {
         try {
             val cars = api.getCars()
 

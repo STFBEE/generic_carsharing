@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.ovm.genericcarsharing
 
 import android.annotation.SuppressLint
@@ -7,38 +9,98 @@ import androidx.appcompat.app.AppCompatActivity
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.Icon
+import com.mapbox.mapboxsdk.annotations.IconFactory
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.ovm.genericcarsharing.domain.Color
+import java.util.*
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener {
+class MainActivity : AppCompatActivity(), PermissionsListener {
 
     private val vm: MainViewModel by viewModel()
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
     private lateinit var map: MapboxMap
 
+    private lateinit var blueCarIcon: Icon
+    private lateinit var blackCarIcon: Icon
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
+        prepareIcons()
+
         setContentView(R.layout.activity_main)
 
         map_view.onCreate(savedInstanceState)
-        map_view.getMapAsync(this)
+        map_view.getMapAsync(this::onMapReady)
+
 
         vm.cars.observe(this) {
             it?.let {
                 Toast.makeText(this, getString(R.string.toast_cars_loaded, it.size), Toast.LENGTH_SHORT).show()
+
+                val r = Random()
+
+                it.forEach { car ->
+                    if (car.latitude == null && car.longitude == null) {
+                        // не ну это бан
+                    } else {
+                        var marker: MarkerOptions = MarkerOptions().position(LatLng(car.latitude!!, car.longitude!!))
+
+                        val icon = when (car.color) {
+                            Color.BLACK -> blackCarIcon
+                            Color.BLUE -> blueCarIcon
+                            // а вдруг бекенд обновится и появятся новые цвета, а мы уже готовы
+                            else -> if (r.nextBoolean()) blackCarIcon else blueCarIcon
+                        }
+
+                        marker = marker.icon(icon)
+
+                        if (car.angle != null) {
+                            // а крутить то нельзя :(
+                            // придется крутить битмапы чтоль
+                            // marker = marker.
+                        }
+
+                        if (car.plate_number != null) {
+                            marker = marker.setTitle(car.plate_number)
+                        }
+
+                        if (car.name != null) {
+                            marker = marker.setSnippet(car.name)
+                        }
+
+                        map.addMarker(marker)
+                    }
+                }
             }
         }
+
+
+    }
+
+    private fun prepareIcons() {
+        // я пробовал сделать через плагин все, но там прям жесть с классами для синхронизации и не оч понятно как рисовать иконки из ресурсов
+        // + IconFactory задеприкейчен с 7.0.0, а в рекомендациях было использование 5.9.0, so...
+        // implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0'
+        //        val symbolManager = SymbolManager(map_view, map, map.style!!)
+        //        symbolManager.create(SymbolOptions().withLatLng(LatLng()))
+
+        val instance = IconFactory.getInstance(this)
+        blueCarIcon = instance.fromResource(R.drawable.car_silhouette_blue)
+        blackCarIcon = instance.fromResource(R.drawable.car_silhouette_black)
     }
 
     override fun onStart() {
@@ -76,7 +138,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         map_view.onDestroy()
     }
 
-    override fun onMapReady(map: MapboxMap) {
+    private fun onMapReady(map: MapboxMap) {
         this.map = map
         map.setStyle(Style.Builder().fromUri("mapbox://styles/belkacar/ckdj89h8c0rk61jlgb850lece")) {
             enableLocationComponent(it)
