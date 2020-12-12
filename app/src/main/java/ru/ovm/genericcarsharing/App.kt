@@ -16,6 +16,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.ovm.genericcarsharing.net.Api
+import ru.ovm.genericcarsharing.ui.map.MapViewModel
 import ru.ovm.genericcarsharing.utils.Utils
 import java.io.File
 
@@ -70,7 +71,7 @@ class App : Application() {
                 .build().create(Api::class.java)
         }
 
-        viewModel { MainViewModel(get()) }
+        viewModel { MapViewModel(get()) }
     }
 
     override fun onCreate() {
@@ -81,10 +82,5 @@ class App : Application() {
             androidContext(this@App)
             modules(appModule)
         }
-    }
-
-    companion object {
-        // Если включить, то сильно лагает и приложение начинает есть до 0.7гб ram, но красиво смотрится
-        const val ROTATE_CARS = false
     }
 }

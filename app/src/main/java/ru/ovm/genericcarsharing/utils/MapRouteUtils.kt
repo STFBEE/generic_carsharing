@@ -13,9 +13,9 @@ object MapRouteUtils {
      * @param bundle to get the DirectionsRoute from
      * @return a DirectionsRoute or null
      */
-    fun getRouteFromBundle(bundle: Bundle): DirectionsRoute? {
+    fun getRouteFromBundle(bundle: Bundle?): DirectionsRoute? {
         try {
-            if (bundle.containsKey(PRIMARY_ROUTE_BUNDLE_KEY)) {
+            if (bundle?.containsKey(PRIMARY_ROUTE_BUNDLE_KEY) == true) {
                 val routeAsJson = bundle.getString(PRIMARY_ROUTE_BUNDLE_KEY)
                 return DirectionsRoute.fromJson(routeAsJson)
             }

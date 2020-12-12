@@ -1,4 +1,4 @@
-package ru.ovm.genericcarsharing
+package ru.ovm.genericcarsharing.ui.map
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,11 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.ovm.genericcarsharing.domain.Car
-import ru.ovm.genericcarsharing.domain.Color
 import ru.ovm.genericcarsharing.net.Api
-import java.util.*
 
-class MainViewModel(private val api: Api) : ViewModel() {
+class MapViewModel(private val api: Api) : ViewModel() {
 
     val cars: LiveData<Map<Long, Car>?>
         get() = _cars

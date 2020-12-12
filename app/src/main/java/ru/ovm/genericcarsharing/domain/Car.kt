@@ -1,5 +1,9 @@
 package ru.ovm.genericcarsharing.domain
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class Car(
     val id: Long?,
     val plate_number: String?,
@@ -9,4 +13,4 @@ data class Car(
     val fuel_percentage: Int?,
     val latitude: Double?,
     val longitude: Double?,
-)
+) : Parcelable

@@ -14,5 +14,7 @@
         <!-- Customize your theme here. -->
 
         <item name="android:textColorPrimary">@color/text_night</item>
+
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 </resources>
