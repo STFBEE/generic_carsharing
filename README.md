@@ -28,11 +28,11 @@
 
 mapboxSDK: "com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.1"
 
-# TODO:
-~~Архитектура~~
-~~Mapbox Navigation -> Directions api~~
-~~мапбокс слои~~ и экспрешены
-кеш и обработка ответа сервера
+### TODO:
+- ~~Архитектура~~
+- ~~Mapbox Navigation -> Directions api~~
+- ~~мапбокс слои~~ и ~~экспрешены~~
+- кеш и обработка ответа сервера
 
 Как картинку в стиль впихнуть
 BitmapFactory.decodeResource(resources, R.drawable.ic_symbol_car_belka_car_default)
