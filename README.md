@@ -29,7 +29,7 @@
 mapboxSDK: "com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.1"
 
 # TODO:
-Архитектура 
+~~Архитектура~~
 Mapbox Navigation -> Directions api 
 мапбокс слои и экспрешены
 кеш и обработка ответа сервера

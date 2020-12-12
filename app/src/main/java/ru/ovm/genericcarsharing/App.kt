@@ -12,10 +12,12 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.ovm.genericcarsharing.net.Api
+import ru.ovm.genericcarsharing.net.cars.ApiCars
+import ru.ovm.genericcarsharing.net.directions.ApiDirections
 import ru.ovm.genericcarsharing.ui.map.MapViewModel
 import ru.ovm.genericcarsharing.utils.Utils
 import java.io.File
@@ -42,12 +44,12 @@ class App : Application() {
                 .addInterceptor {
                     val originalResponse = it.proceed(it.request())
                     if (Utils.isNetworkConnected(get())) {
-                        val maxAge = 60*60 // read from cache for 1 minute
+                        val maxAge = 60 * 10 // 10 минут
                         originalResponse.newBuilder()
                             .header("Cache-Control", "public, max-age=$maxAge")
                             .build()
                     } else {
-                        val maxStale = 60 * 60 * 24 * 28 // tolerate 4-weeks stale
+                        val maxStale = 60 * 60 * 24 * 28 // 4 недели
                         originalResponse.newBuilder()
                             .header("Cache-Control", "public, only-if-cached, max-stale=$maxStale")
                             .build()
@@ -63,15 +65,29 @@ class App : Application() {
             GsonBuilder().create()
         }
 
-        single<Api> {
+        single<ApiCars>(named(Api.CARS)) {
             Retrofit.Builder()
-                .baseUrl(Api.URL)
+                .baseUrl(ApiCars.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create(get()))
                 .client(get())
-                .build().create(Api::class.java)
+                .build().create(ApiCars::class.java)
         }
 
-        viewModel { MapViewModel(get()) }
+        single<ApiDirections>(named(Api.DIRECTIONS)) {
+            Retrofit.Builder()
+                .baseUrl(ApiDirections.ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create(get()))
+                .client(get())
+                .build().create(ApiDirections::class.java)
+        }
+
+        viewModel {
+            MapViewModel(
+                get(named(Api.CARS)),
+                get(named(Api.DIRECTIONS)),
+                androidContext()
+            )
+        }
     }
 
     override fun onCreate() {
@@ -82,5 +98,9 @@ class App : Application() {
             androidContext(this@App)
             modules(appModule)
         }
+    }
+
+    enum class Api {
+        CARS, DIRECTIONS
     }
 }

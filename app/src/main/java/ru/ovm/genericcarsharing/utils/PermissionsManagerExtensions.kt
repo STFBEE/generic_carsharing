@@ -8,8 +8,10 @@ import androidx.fragment.app.Fragment
 import com.mapbox.android.core.permissions.PermissionsManager
 import java.util.*
 
-fun PermissionsManager.requestLocationPermissions(fragment: Fragment) {
+// так как мы дергаем методы пермишенов из фрагмента, то нам нужен метод androidx.fragment.app.Fragment.requestPermissions
+// иначе не сработает колбек androidx.fragment.app.Fragment.onRequestPermissionsResult
 
+fun PermissionsManager.requestLocationPermissions(fragment: Fragment) {
     try {
         val packageInfo = fragment.requireActivity().packageManager.getPackageInfo(
             fragment.requireActivity().packageName, PackageManager.GET_PERMISSIONS

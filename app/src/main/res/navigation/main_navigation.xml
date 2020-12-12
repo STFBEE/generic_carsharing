@@ -21,6 +21,6 @@
         tools:layout="@layout/fragment_car_info">
         <argument
             android:name="car"
-            app:argType="ru.ovm.genericcarsharing.domain.Car" />
+            app:argType="ru.ovm.genericcarsharing.net.cars.domain.Car" />
     </dialog>
 </navigation>
