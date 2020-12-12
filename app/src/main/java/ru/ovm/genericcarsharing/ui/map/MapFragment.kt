@@ -12,11 +12,10 @@ import androidx.navigation.fragment.findNavController
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.navigation.ui.route.NavigationMapRoute
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.ovm.genericcarsharing.R
-import ru.ovm.genericcarsharing.net.cars.domain.Car
+import ru.ovm.genericcarsharing.net.domain.Car
 import ru.ovm.genericcarsharing.utils.requestLocationPermissions
 
 class MapFragment : Fragment(R.layout.fragment_map) {
@@ -48,17 +47,6 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             if (it == true) {
                 permissionsManager.requestLocationPermissions(this@MapFragment)
                 vm.permissionsRequested()
-            }
-        }
-
-        vm.needToUpdateMapRoute.observe(viewLifecycleOwner) {
-            if (it != null) {
-                val (map, navigation) = it
-                val mapRoute = NavigationMapRoute.Builder(map_view, map, viewLifecycleOwner)
-                    .withVanishRouteLineEnabled(true)
-                    .withMapboxNavigation(navigation)
-                    .build()
-                vm.updateMapRoute(mapRoute)
             }
         }
     }

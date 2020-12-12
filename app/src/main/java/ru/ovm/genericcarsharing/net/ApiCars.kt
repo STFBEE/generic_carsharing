@@ -1,7 +1,7 @@
-package ru.ovm.genericcarsharing.net.cars
+package ru.ovm.genericcarsharing.net
 
 import retrofit2.http.GET
-import ru.ovm.genericcarsharing.net.cars.domain.Car
+import ru.ovm.genericcarsharing.net.domain.Car
 
 interface ApiCars {
     @GET("/Gary111/TrashCan/master/2000_cars.json")

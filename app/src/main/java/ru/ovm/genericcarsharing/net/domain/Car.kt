@@ -1,4 +1,4 @@
-package ru.ovm.genericcarsharing.net.cars.domain
+package ru.ovm.genericcarsharing.net.domain
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

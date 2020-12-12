@@ -12,12 +12,10 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.ovm.genericcarsharing.net.cars.ApiCars
-import ru.ovm.genericcarsharing.net.directions.ApiDirections
+import ru.ovm.genericcarsharing.net.ApiCars
 import ru.ovm.genericcarsharing.ui.map.MapViewModel
 import ru.ovm.genericcarsharing.utils.Utils
 import java.io.File
@@ -65,7 +63,7 @@ class App : Application() {
             GsonBuilder().create()
         }
 
-        single<ApiCars>(named(Api.CARS)) {
+        single<ApiCars> {
             Retrofit.Builder()
                 .baseUrl(ApiCars.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create(get()))
@@ -73,18 +71,9 @@ class App : Application() {
                 .build().create(ApiCars::class.java)
         }
 
-        single<ApiDirections>(named(Api.DIRECTIONS)) {
-            Retrofit.Builder()
-                .baseUrl(ApiDirections.ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create(get()))
-                .client(get())
-                .build().create(ApiDirections::class.java)
-        }
-
         viewModel {
             MapViewModel(
-                get(named(Api.CARS)),
-                get(named(Api.DIRECTIONS)),
+                get(),
                 androidContext()
             )
         }
@@ -98,9 +87,5 @@ class App : Application() {
             androidContext(this@App)
             modules(appModule)
         }
-    }
-
-    enum class Api {
-        CARS, DIRECTIONS
     }
 }

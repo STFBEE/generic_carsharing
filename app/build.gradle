@@ -59,7 +59,7 @@ dependencies {
 
     // maps
     implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.0"
-    implementation "com.mapbox.navigation:ui:1.2.0"
+    implementation "com.mapbox.mapboxsdk:mapbox-sdk-services:5.5.0"
 
     // network
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
