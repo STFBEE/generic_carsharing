@@ -24,6 +24,7 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.Property.LINE_CAP_ROUND
 import com.mapbox.mapboxsdk.style.layers.Property.LINE_JOIN_ROUND
@@ -37,6 +38,7 @@ import retrofit2.Response
 import ru.ovm.genericcarsharing.R
 import ru.ovm.genericcarsharing.net.ApiCars
 import ru.ovm.genericcarsharing.net.domain.Car
+import ru.ovm.genericcarsharing.net.domain.Color
 
 class MapViewModel(
     private val apiCars: ApiCars,
@@ -193,8 +195,15 @@ class MapViewModel(
     private fun setUpCarsIconLayer(style: Style) {
         style.addLayer(
             SymbolLayer(LAYER_CARS, SOURCE_CARS).withProperties(
-                iconImage(IMAGE_CAR_BLACK_ID), // TODO: 12.12.2020 expression for color select
+                iconImage(
+                    match(get(PROPERTY_CAR_COLOR),
+                        literal(Color.BLACK.toString()), image(literal(IMAGE_CAR_BLACK_ID)),
+                        literal(Color.BLUE.toString()), image(literal(IMAGE_CAR_BLUE_ID)),
+                        image(literal(IMAGE_CAR_BLUE_ID))
+                    )
+                ),
                 iconSize(.75f),
+                iconRotate(get(PROPERTY_CAR_ID)),
                 iconAllowOverlap(true),
                 iconIgnorePlacement(true)
             )
@@ -222,6 +231,7 @@ class MapViewModel(
                 Point.fromLngLat(car.longitude, car.latitude)
             )
             singleFeature.addNumberProperty(PROPERTY_CAR_ID, car.id)
+            singleFeature.addNumberProperty(PROPERTY_CAR_ANGLE, car.angle)
             singleFeature.addStringProperty(PROPERTY_CAR_COLOR, car.color.toString())
             carFeatures.add(singleFeature)
         }
@@ -271,7 +281,7 @@ class MapViewModel(
         const val LAYER_ROUTE = "LAYER_ROUTE"
         const val SOURCE_CARS = "SOURCE_CARS"
         const val SOURCE_ROUTE = "SOURCE_ROUTE"
-        const val CAR_ANGLE = "CAR_ANGLE"
+        const val PROPERTY_CAR_ANGLE = "PROPERTY_CAR_ANGLE"
         const val PROPERTY_CAR_ID = "PROPERTY_CAR_ID"
         const val PROPERTY_CAR_COLOR = "PROPERTY_CAR_COLOR"
     }
