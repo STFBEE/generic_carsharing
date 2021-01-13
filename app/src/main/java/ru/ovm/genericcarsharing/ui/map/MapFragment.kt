@@ -66,7 +66,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     }
 
     private fun showCarSheet(car: Car) {
-        findNavController().navigate(MapFragmentDirections.actionMapFragmentToCarInfoFragment(car))
+        findNavController().navigate(MapFragmentDirections.actionMapFragmentToCarInfoFragment(car.id!!))
     }
 
     private var permissionsManager: PermissionsManager = PermissionsManager(object :

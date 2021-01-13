@@ -30,7 +30,7 @@ allprojects {
             }
             credentials {
                 username = 'mapbox'
-                password = ""
+                password = "sk.eyJ1Ijoic3RmYmVlIiwiYSI6ImNranZmOHExMjA4OHYyd2xjd2FkeHFxaGEifQ.P3st1jotZoKmCktEmdh1PQ"
             }
         }
     }

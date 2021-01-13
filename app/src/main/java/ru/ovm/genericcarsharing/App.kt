@@ -15,7 +15,10 @@ import org.koin.core.logger.Level
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.ovm.genericcarsharing.data.CarRepository
+import ru.ovm.genericcarsharing.data.CarStorage
 import ru.ovm.genericcarsharing.net.ApiCars
+import ru.ovm.genericcarsharing.ui.carinfo.CarInfoViewModel
 import ru.ovm.genericcarsharing.ui.map.MapViewModel
 import ru.ovm.genericcarsharing.utils.Utils
 import java.io.File
@@ -71,12 +74,22 @@ class App : Application() {
                 .build().create(ApiCars::class.java)
         }
 
+        single {
+            CarStorage()
+        }
+
+        single {
+            CarRepository(get(), get())
+        }
+
         viewModel {
             MapViewModel(
                 get(),
-                androidContext()
+                androidContext(),
             )
         }
+
+        viewModel { CarInfoViewModel(get()) }
     }
 
     override fun onCreate() {

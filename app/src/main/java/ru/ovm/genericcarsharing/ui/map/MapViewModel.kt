@@ -36,16 +36,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ru.ovm.genericcarsharing.R
-import ru.ovm.genericcarsharing.net.ApiCars
+import ru.ovm.genericcarsharing.data.CarRepository
 import ru.ovm.genericcarsharing.net.domain.Car
 import ru.ovm.genericcarsharing.net.domain.Color
 
 class MapViewModel(
-    private val apiCars: ApiCars,
-    private val androidContext: Context,
+    private val repository: CarRepository,
+    private val androidContext: Context
 ) : ViewModel() {
 
-    private val cars: MutableMap<Long, Car> = mutableMapOf()
+    private var cars: Map<Long, Car> = mutableMapOf()
     private val carFeatures: MutableList<Feature> = mutableListOf()
 
     val showCarInfo: LiveData<Car?>
@@ -84,10 +84,7 @@ class MapViewModel(
 
     private fun loadCars() = viewModelScope.launch {
         try {
-            apiCars.getCars()
-                .filter { it.id != null && it.latitude != null && it.longitude != null }
-                .map { car -> car.id!! to car }
-                .toMap(cars)
+            cars = repository.getCars()
 
             convertCarsToFeatures()
         } catch (e: Exception) {
@@ -196,7 +193,8 @@ class MapViewModel(
         style.addLayer(
             SymbolLayer(LAYER_CARS, SOURCE_CARS).withProperties(
                 iconImage(
-                    match(get(PROPERTY_CAR_COLOR),
+                    match(
+                        get(PROPERTY_CAR_COLOR),
                         literal(Color.BLACK.toString()), image(literal(IMAGE_CAR_BLACK_ID)),
                         literal(Color.BLUE.toString()), image(literal(IMAGE_CAR_BLUE_ID)),
                         image(literal(IMAGE_CAR_BLUE_ID))
