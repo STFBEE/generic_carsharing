@@ -85,7 +85,6 @@ class App : Application() {
         viewModel {
             MapViewModel(
                 get(),
-                androidContext(),
             )
         }
 

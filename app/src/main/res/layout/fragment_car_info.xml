@@ -11,74 +11,136 @@
     app:cardElevation="14dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/car_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:maxLines="2"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Реново Воган чёрного цвета двадцатого века" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/car_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/plate_drawable"
-            android:paddingHorizontal="6dp"
-            android:paddingVertical="2dp"
-            android:textColor="@color/text_day"
-            android:textSize="18sp"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/car_name"
-            tools:text="е420кх777" />
+            <TextView
+                android:id="@+id/car_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:maxLines="2"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Реново Воган чёрного цвета двадцатого века" />
 
-        <ImageView
-            android:id="@+id/fuel_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/gas_station"
-            app:layout_constraintBottom_toBottomOf="@+id/car_fuel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/car_fuel"
-            app:tint="?android:attr/textColorPrimary" />
+            <TextView
+                android:id="@+id/car_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/plate_drawable"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:textColor="@color/text_day"
+                android:textSize="18sp"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/car_name"
+                tools:text="е420кх777" />
 
-        <TextView
-            android:id="@+id/car_fuel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@id/fuel_icon"
-            app:layout_constraintTop_toBottomOf="@+id/car_name"
-            tools:text="20%" />
+            <ImageView
+                android:id="@+id/fuel_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/gas_station"
+                app:layout_constraintBottom_toBottomOf="@+id/car_fuel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/car_fuel"
+                app:tint="?android:attr/textColorPrimary" />
 
-        <ImageView
-            android:id="@+id/car_image"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="8:5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/car_number"
-            tools:src="@tools:sample/backgrounds/scenic" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/car_fuel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@id/fuel_icon"
+                app:layout_constraintTop_toBottomOf="@+id/car_name"
+                tools:text="20%" />
+
+            <ImageView
+                android:id="@+id/car_image"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="8:5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/car_number"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+
+            <TextView
+                android:id="@+id/fight_club"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Я знаю это, потому что это знает Тайлер.\n
+Смешайте нитроглицерин с опилками, и вы получите отличный пластит. Некоторые предпочитают смешивать нитроглицерин с ватой и английской солью. Это тоже дает неплохой результат. А некоторые мешают нитру с парафином. Но при этом получается ненадежная взрывчатка.\n
+Мы с Тайлером находимся на вершине небоскреба «Паркер-Моррис». Ствол пистолета засунут мне в рот. Издалека доносится звук бьющегося стекла. Загляни за край крыши. День пасмурный, даже на этой высоте солнца не видно. Это самое высокое здание в мире, так что на вершине его холодно даже летом. Кругом царит космическое безмолвие. Такое ощущение, что ты –
+дрессированная обезьянка-астронавт. Чему тебя научили, то и делаешь"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/car_image" />
+
+            <RadioGroup
+                android:id="@+id/controls"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fight_club">
+
+                <RadioButton
+                    android:id="@+id/radio_default"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Скрытый, свернутый, полуразвернутый, развернутый" />
+
+                <RadioButton
+                    android:id="@+id/radio_default_full"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Скрытый, свернутый, развернутый" />
+
+                <RadioButton
+                    android:id="@+id/radio_collapsed_expanded"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Свернутый, развернутый" />
+
+                <RadioButton
+                    android:id="@+id/radio_hidden_expanded"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Скрытый, развернутый" />
+
+                <RadioButton
+                    android:id="@+id/radio_expanded"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Развернутый " />
+            </RadioGroup>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.cardview.widget.CardView>
