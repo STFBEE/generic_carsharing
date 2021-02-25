@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_car_info.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.ovm.genericcarsharing.R
+import ru.ovm.genericcarsharing.utils.BehaviorManager
 import kotlin.concurrent.thread
 
 class CarInfoFragment : BottomSheetDialogFragment() {
@@ -37,8 +38,6 @@ class CarInfoFragment : BottomSheetDialogFragment() {
 
         vm.car.observe(viewLifecycleOwner) {
 
-            // TODO: 13.01.2021 тут можно лоадер добавить (а лучше скелетон)
-
             it?.let { car ->
 
                 car_fuel.text = getString(R.string.car_fuel_text, car.fuel_percentage)
@@ -59,72 +58,31 @@ class CarInfoFragment : BottomSheetDialogFragment() {
         }
 
         behavior = (dialog as BottomSheetDialog).behavior
+        val behaviorManager = BehaviorManager(
+            behavior = behavior,
+            halfRatio = .5f
+        )
 
         thread {
             activity?.runOnUiThread {
                 behavior.peekHeight = car_image.top
-                setBehaviorState(State.DEFAULT)
+
+                val metrics = resources.displayMetrics
+                val half = car_image.bottom.toFloat() / metrics.heightPixels
+                behaviorManager.halfRatio = half
+
+                behaviorManager.setBehaviorState(BehaviorManager.State.DEFAULT)
             }
         }
 
         controls.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.radio_default -> setBehaviorState(State.DEFAULT)
-                R.id.radio_default_full -> setBehaviorState(State.DEFAULT_FULL)
-                R.id.radio_collapsed_expanded -> setBehaviorState(State.COLLAPSED_EXPANDED)
-                R.id.radio_hidden_expanded -> setBehaviorState(State.HIDDEN_EXPANDED)
-                R.id.radio_expanded -> setBehaviorState(State.EXPANDED)
+                R.id.radio_default -> behaviorManager.setBehaviorState(BehaviorManager.State.DEFAULT)
+                R.id.radio_default_full -> behaviorManager.setBehaviorState(BehaviorManager.State.DEFAULT_FULL)
+                R.id.radio_collapsed_expanded -> behaviorManager.setBehaviorState(BehaviorManager.State.COLLAPSED_EXPANDED)
+                R.id.radio_hidden_expanded -> behaviorManager.setBehaviorState(BehaviorManager.State.HIDDEN_EXPANDED)
+                R.id.radio_expanded -> behaviorManager.setBehaviorState(BehaviorManager.State.EXPANDED)
             }
         }
-    }
-
-    private fun setBehaviorState(state: State) {
-        when (state) {
-            State.DEFAULT -> {
-                behavior.isHideable = true
-                behavior.isFitToContents = false
-                behavior.skipCollapsed = false
-                behavior.isDraggable = true
-                behavior.halfExpandedRatio = .5f // TODO: 25.02.2021 rocket science to get size
-            }
-            State.DEFAULT_FULL -> {
-                behavior.isHideable = true
-                behavior.skipCollapsed = false
-                behavior.isFitToContents = false
-                behavior.isDraggable = true
-                behavior.halfExpandedRatio = 0.99999f
-            }
-            State.COLLAPSED_EXPANDED -> {
-                behavior.isHideable = false
-                behavior.skipCollapsed = false
-                behavior.isFitToContents = false
-                behavior.isDraggable = true
-                behavior.halfExpandedRatio = 0.99999f
-            }
-            State.HIDDEN_EXPANDED -> {
-                behavior.isHideable = true
-                behavior.isFitToContents = true
-                behavior.skipCollapsed = true
-                behavior.isDraggable = true
-                behavior.halfExpandedRatio = 0.99999f
-            }
-            State.EXPANDED -> {
-                behavior.isHideable = false
-                behavior.skipCollapsed = true
-                behavior.isFitToContents = false
-                behavior.isDraggable = false
-                behavior.halfExpandedRatio = 0.99999f
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            }
-        }
-    }
-
-
-    enum class State {
-        DEFAULT,
-        DEFAULT_FULL,
-        COLLAPSED_EXPANDED,
-        HIDDEN_EXPANDED,
-        EXPANDED,
     }
 }
