@@ -1,11 +1,9 @@
 package ru.ovm.genericcarsharing.utils
 
-import android.view.View
-import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class BehaviorManager(
-    private val behavior: BottomSheetBehavior<FrameLayout>,
+    private val behavior: BottomSheetBehavior<*>,
     var halfRatio: Float,
 ) {
 
