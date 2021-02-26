@@ -78,10 +78,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             .load(photo)
             .into(car_image)
 
-        val behaviorManager = BehaviorManager(
-            behavior = behavior,
-            halfRatio = .5f
-        )
+        val behaviorManager = BehaviorManager(behavior)
 
         thread {
             activity?.runOnUiThread {
@@ -91,6 +88,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 val half = car_image.bottom.toFloat() / metrics.heightPixels
                 behaviorManager.halfRatio = half
 
+                behaviorManager.use99forHalfState = use_99.isChecked
                 behaviorManager.setBehaviorState(BehaviorManager.State.DEFAULT)
             }
         }
@@ -105,6 +103,10 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 R.id.radio_hidden_expanded -> behaviorManager.setBehaviorState(BehaviorManager.State.HIDDEN_EXPANDED)
                 R.id.radio_expanded -> behaviorManager.setBehaviorState(BehaviorManager.State.EXPANDED)
             }
+        }
+
+        use_99.setOnCheckedChangeListener { buttonView, isChecked ->
+            behaviorManager.use99forHalfState = isChecked
         }
     }
 }

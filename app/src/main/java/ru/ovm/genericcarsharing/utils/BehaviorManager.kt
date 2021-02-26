@@ -4,10 +4,24 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class BehaviorManager(
     private val behavior: BottomSheetBehavior<*>,
-    var halfRatio: Float,
 ) {
 
+    var use99forHalfState = true
+        set(value) {
+            field = value
+            setBehaviorState(state)
+        }
+
+    var halfRatio: Float = .5f
+        set(value) {
+            field = value
+            setBehaviorState(state)
+        }
+
+    private var state: State = State.DEFAULT
+
     fun setBehaviorState(state: State) {
+        this.state = state
         when (state) {
             State.DEFAULT -> {
                 behavior.isHideable = true
@@ -21,28 +35,28 @@ class BehaviorManager(
                 behavior.skipCollapsed = false
                 behavior.isFitToContents = false
                 behavior.isDraggable = true
-                behavior.halfExpandedRatio = 0.99999f
+                behavior.halfExpandedRatio = if (use99forHalfState) 0.99999f else 0.00001f
             }
             State.COLLAPSED_EXPANDED -> {
                 behavior.isHideable = false
                 behavior.skipCollapsed = false
                 behavior.isFitToContents = false
                 behavior.isDraggable = true
-                behavior.halfExpandedRatio = 0.99999f
+                behavior.halfExpandedRatio = if (use99forHalfState) 0.99999f else 0.00001f
             }
             State.HIDDEN_EXPANDED -> {
                 behavior.isHideable = true
                 behavior.isFitToContents = true
                 behavior.skipCollapsed = true
                 behavior.isDraggable = true
-                behavior.halfExpandedRatio = 0.99999f
+                behavior.halfExpandedRatio = if (use99forHalfState) 0.99999f else 0.00001f
             }
             State.EXPANDED -> {
                 behavior.isHideable = false
                 behavior.skipCollapsed = true
                 behavior.isFitToContents = false
                 behavior.isDraggable = false
-                behavior.halfExpandedRatio = 0.99999f
+                behavior.halfExpandedRatio = if (use99forHalfState) 0.99999f else 0.00001f
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
